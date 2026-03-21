@@ -99,8 +99,6 @@ Unlike traditional systems, MedFlow focuses on solving **real-world healthcare p
 - Razorpay integration  
 - Secure and seamless transactions  
 
----
-
 ## 🌐 Project Setup
 
 ### Clone Repository
@@ -108,30 +106,27 @@ Unlike traditional systems, MedFlow focuses on solving **real-world healthcare p
 git clone https://github.com/your-username/medflow.git
 cd medflow
 
-```
-
 ## Install Dependencies
-cd frontend & backend 
+cd frontend
 npm install
 
-
+cd ../backend
+npm install
 ## Environment Variables
+
+Create a .env file in the backend folder:
+
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
 RAZORPAY_API_KEY=your_razorpay_api_key
-
-
-## Run Project
+Run Project
 npm run dev
-
-
-📦 Folder Structure
+## 📦 Folder Structure
 medflow/
-├── frontend/          
-├── Backend/          
-├── Admine/                 
-├── utils/           
-└── .env      
+├── frontend/      # React Frontend
+├── backend/       # Node.js Backend
+├── admin/         # Admin Panel
+├── utils/         # Utility Functions
 
 
 ## 🎯 Project Vision
