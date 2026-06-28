@@ -13,6 +13,7 @@ const AdminContextProvider = (props) => {
 
     const [doctors, setDoctors] = useState([])
     const [dashData, setDashData] = useState(false)
+    const [pendingDoctors, setPendingDoctors] = useState([])
 
 
     const getAllDoctors = async () => {
@@ -106,13 +107,64 @@ const AdminContextProvider = (props) => {
 
     }
 
+    // Fetch pending doctors for verification
+    const getPendingDoctors = async () => {
+        try {
+            const { data } = await axios.get(backendUrl + '/api/admin/doctors/pending', { headers: { aToken } })
+            if (data.success) {
+                setPendingDoctors(data.pendingDoctors)
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
+    // Approve doctor
+    const approveDoctor = async (id) => {
+        try {
+            const { data } = await axios.patch(backendUrl + `/api/admin/doctors/${id}/approve`, {}, { headers: { aToken } })
+            if (data.success) {
+                toast.success(data.message)
+                getPendingDoctors()
+                getAllDoctors()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
+    // Reject doctor
+    const rejectDoctor = async (id) => {
+        try {
+            const { data } = await axios.patch(backendUrl + `/api/admin/doctors/${id}/reject`, {}, { headers: { aToken } })
+            if (data.success) {
+                toast.success(data.message)
+                getPendingDoctors()
+                getAllDoctors()
+            } else {
+                toast.error(data.message)
+            }
+        } catch (error) {
+            console.log(error)
+            toast.error(error.message)
+        }
+    }
+
     const value = {
         aToken, setAToken,
         backendUrl, doctors,
         getAllDoctors, changeAvailability,
         appointments, setAppointments,
         getAllAppointments, cancelAppointment,
-         getDashData, dashData
+        getDashData, dashData,
+        pendingDoctors, setPendingDoctors,
+        getPendingDoctors, approveDoctor, rejectDoctor
     }
 
     return (

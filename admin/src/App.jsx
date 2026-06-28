@@ -15,11 +15,24 @@ import Login from './pages/Login'
 import DoctorAppointments from './pages/Doctor/DoctorAppointments'
 import DoctorDashboard from './pages/Doctor/DoctorDashboard'
 import DoctorProfile from './pages/Doctor/DoctorProfile'
+import VerifyDoctors from './pages/Admin/VerifyDoctors'
 
 const App = () => {
-  const { dToken } = useContext(DoctorContext)
+  const { dToken, setDToken } = useContext(DoctorContext)
   const { aToken } = useContext(AdminContext)
   const location = useLocation()
+
+  // Handle SSO login redirect for doctors
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const tokenFromUrl = params.get('dToken')
+    if (tokenFromUrl) {
+      localStorage.setItem('dToken', tokenFromUrl)
+      setDToken(tokenFromUrl)
+      // Clear query params
+      window.history.replaceState({}, document.title, window.location.pathname)
+    }
+  }, [setDToken])
 
   // Redirect "/" to the proper dashboard
   if (location.pathname === '/') {
@@ -40,6 +53,7 @@ const App = () => {
             <Route path="/all-appointments" element={<AllAppointments />} />
             <Route path="/add-doctor" element={<AddDoctor />} />
             <Route path="/doctor-list" element={<DoctorsList />} />
+            <Route path="/verify-doctors" element={<VerifyDoctors />} />
             <Route path="*" element={<Navigate to="/admin-dashboard" />} />
           </Routes>
         </div>

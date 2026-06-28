@@ -20,7 +20,7 @@ const Navbar = () => {
       <div className="w-28 h-28 overflow-hidden">
         <img
           onClick={() => navigate('/')}
-          src={assets.logo || '/fallback-logo.png'}
+          src={assets.logoMed || '/fallback-logo.png'}
           alt="Logo"
           className="w-full h-full object-cover object-center cursor-pointer"
         />
@@ -34,8 +34,11 @@ const Navbar = () => {
           <NavLink to='/doctors' className={({ isActive }) => isActive ? 'border-b-2 border-primary' : ''}>ALL DOCTORS</NavLink>
         </li>
         <li className='pb-0.5'>
-          <NavLink to='/about' className={({ isActive }) => isActive ? 'border-b-2 border-primary' : ''}>ABOUT</NavLink>
+          <NavLink to='/symptom-checker' className={({ isActive }) => isActive ? 'border-b-2 border-primary' : ''}>SYMPTOM CHECKER</NavLink>
         </li>
+        {/* <li className='pb-0.5'>
+          <NavLink to='/about' className={({ isActive }) => isActive ? 'border-b-2 border-primary' : ''}>ABOUT</NavLink>
+        </li> */}
         <li className='pb-0.5'>
           <NavLink to='/contact' className={({ isActive }) => isActive ? 'border-b-2 border-primary' : ''}>CONTACT</NavLink>
         </li>
@@ -52,6 +55,14 @@ const Navbar = () => {
             Admin Panel
           </button>
         )}
+
+        {/* ✅ For Doctors Button */}
+        <button
+          onClick={() => navigate('/doctor/register')}
+          className='border border-primary text-primary hover:bg-primary hover:text-white text-xs px-4 py-2 rounded-full hidden md:block'
+        >
+          For Doctors
+        </button>
 
         {token && userData ? (
           <div className='flex items-center gap-2 cursor-pointer group relative'>
@@ -85,8 +96,10 @@ const Navbar = () => {
           <ul className='flex flex-col items-center gap-2 mt-5 px-5 text-lg font-medium'>
             <NavLink onClick={() => setShowMenu(false)} to='/'><p className='px-4 py-2 rounded full inline-block'>HOME</p></NavLink>
             <NavLink onClick={() => setShowMenu(false)} to='/doctors' ><p className='px-4 py-2 rounded full inline-block'>ALL DOCTORS</p></NavLink>
-            <NavLink onClick={() => setShowMenu(false)} to='/about' ><p className='px-4 py-2 rounded full inline-block'>ABOUT</p></NavLink>
+            <NavLink onClick={() => setShowMenu(false)} to='/symptom-checker' ><p className='px-4 py-2 rounded full inline-block'>SYMPTOM CHECKER</p></NavLink>
+            {/* <NavLink onClick={() => setShowMenu(false)} to='/about' ><p className='px-4 py-2 rounded full inline-block'>ABOUT</p></NavLink> */}
             <NavLink onClick={() => setShowMenu(false)} to='/contact' ><p className='px-4 py-2 rounded full inline-block'>CONTACT</p></NavLink>
+            <NavLink onClick={() => setShowMenu(false)} to='/doctor/register' ><p className='px-4 py-2 rounded full inline-block'>FOR DOCTORS</p></NavLink>
           </ul>
         </div>
       </div>

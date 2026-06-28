@@ -12,7 +12,10 @@ const loginAdmin = async (req, res) => {
 
         const { email, password } = req.body
 
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+        const adminEmail = process.env.ADMIN_EMAIL ? process.env.ADMIN_EMAIL.trim() : "";
+        const adminPassword = process.env.ADMIN_PASSWORD ? process.env.ADMIN_PASSWORD.trim() : "";
+
+        if (email === adminEmail && password === adminPassword) {
             const token = jwt.sign(email + password, process.env.JWT_SECRET)
             res.json({ success: true, token })
         } else {
@@ -47,8 +50,13 @@ const addDoctor = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
-    const imageUrl = imageUpload.secure_url;
+    let imageUrl = "https://res.cloudinary.com/demo/image/upload/sample.jpg";
+    if (process.env.CLOUDINARY_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_SECRET_KEY) {
+      const imageUpload = await cloudinary.uploader.upload(imageFile.path, { resource_type: "image" });
+      imageUrl = imageUpload.secure_url;
+    } else {
+      console.warn("Cloudinary credentials missing, using placeholder image.");
+    }
 
     const doctorData = {
       name,
@@ -61,6 +69,8 @@ const addDoctor = async (req, res) => {
       about,
       fees,
       address: JSON.parse(address),
+      isVerified: true,
+      status: "approved",
       date: Date.now()
     };
 
@@ -154,4 +164,53 @@ const adminDashboard = async (req, res) => {
 }
 
 
-export {loginAdmin, addDoctor, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard}
+// API to get pending doctors list for verification
+const getPendingDoctors = async (req, res) => {
+    try {
+        const pendingDoctors = await doctorModel.find({ status: "pending" });
+        res.json({ success: true, pendingDoctors });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// API to approve a doctor
+const approveDoctor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const doctor = await doctorModel.findByIdAndUpdate(
+            id,
+            { isVerified: true, status: "approved" },
+            { new: true }
+        );
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+        res.json({ success: true, message: "Doctor approved successfully", doctor });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// API to reject a doctor
+const rejectDoctor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const doctor = await doctorModel.findByIdAndUpdate(
+            id,
+            { isVerified: false, status: "rejected" },
+            { new: true }
+        );
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+        res.json({ success: true, message: "Doctor rejected successfully", doctor });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+export {loginAdmin, addDoctor, allDoctors, appointmentsAdmin, appointmentCancel, adminDashboard, getPendingDoctors, approveDoctor, rejectDoctor}
